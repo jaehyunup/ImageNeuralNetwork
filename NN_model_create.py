@@ -48,6 +48,8 @@ train_labels = Y_data[0:int(len(Y_data))] # 라벨 개수( 이미지 라벨 개�
 test_features = X_data[0:int(0.2*len(X_data))] # 테스트 특징 개수
 test_labels = Y_data[0:int(0.2*len(Y_data))] #테스트 라벨 개수
 
+
+print(train_features)
 # Training data declaration
 '''
 def train_data_iterator(): # 트레이닝 데이터 셔플후 반환.
@@ -103,7 +105,7 @@ for epoch in range(1000):
     a=a+1;
 print("==Training finish===")
 # 학습 된모델 저장
-saver.save(sess, './model\\'+"testModel.ckpt", global_step= 1000)
+saver.save(sess, './model\\'+"testModel", global_step= 1000)
 print("==Model Saved OK.===")
 
 
