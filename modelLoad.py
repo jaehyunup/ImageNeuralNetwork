@@ -1,19 +1,19 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2' # 로그출력 레벨설정
-import cv2
-import numpy as np
-from random import shuffle
+try:
+    import cv2
+except ImportError:
+    pass
 import tensorflow as tf
-import matplotlib.pyplot as plt
+import matplotlib
+
 
 cap = cv2.VideoCapture('img_data\\car3.mp4')
+while(True):
+    ret,frame=cap.read()
+    #grayframe=cv2.imread(frame, cv2.IMREAD_GRAYSCALE)
+    #cv2.imshow("video",grayframe)
 
-while(cap.isOpened()):
-    ret, frame = cap.read()
-    grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    cv2.imshow('Video',grayFrame)
-cap.release()
-cv2.destroyAllWindows()
 
 sess = tf.Session()
 # create Model Network
@@ -40,6 +40,7 @@ model = tf.add(tf.matmul(L2,w3),b3)
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=model, labels=Y))
 optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
 saver.restore(sess,'model\\testModel.ckpt')
+
 
 prediction = tf.argmax(model, axis = 1)
 target = tf.argmax(Y, axis = 1)
