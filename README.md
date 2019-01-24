@@ -1,2 +1,3 @@
 # ImageNeuralNetwork
-Neural Network Study
+
+영상에 대해 첫프레임의 배경영역을 학습하여 뒤의 프레임에서 배경영역을 학습된 모델을 통해 지속적으로 검출하는 뉴럴 네트워크의 구현
