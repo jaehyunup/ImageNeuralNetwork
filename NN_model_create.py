@@ -33,6 +33,9 @@ x_data = list(x_data)
 y_data = list(y_data)
 print('===============================')
 '''
+
+#print(len(X_data))
+
 Y_label = np.zeros((144,2)) # Y_label One hot encoding
 for i in range(0, len(Y_data)):
     if Y_data[i] == '0':
@@ -41,15 +44,13 @@ for i in range(0, len(Y_data)):
         Y_label[i] = [0.0, 1.0]
 
 Y_data = Y_label
-print(Y_data.shape)
+#print(Y_data.shape)
 
 train_features = X_data[0:int(len(X_data))] # 특징 개수( 이미지 개수) * 0.8
 train_labels = Y_data[0:int(len(Y_data))] # 라벨 개수( 이미지 라벨 개수) * 0.8
 test_features = X_data[0:int(0.2*len(X_data))] # 테스트 특징 개수
 test_labels = Y_data[0:int(0.2*len(Y_data))] #테스트 라벨 개수
 
-
-print(train_features)
 # Training data declaration
 '''
 def train_data_iterator(): # 트레이닝 데이터 셔플후 반환.
@@ -108,6 +109,9 @@ print("==Training finish===")
 saver.save(sess, './model\\'+"testModel", global_step= 1000)
 print("==Model Saved OK.===")
 
+
+
+print(test_features[0])
 
 
 prediction = tf.argmax(model, axis = 1)

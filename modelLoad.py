@@ -5,38 +5,19 @@ try:
 except ImportError:
     pass
 import tensorflow as tf
-import matplotlib
+import numpy as np
+import matplotlib.pyplot as plt
 
-#image trim function
 def img_trim(src_image):
-    temp_list=[]
     src_real=src_image.copy()
-    x,y=80,80
-    #16대 9의 영상비를 가짐
+    temp_list=[]
+    x ,y=0,0
     for i in range(0,16):
-        x=x+80
         for j in range(0,9):
-            src_real[0:x,0:y]
-            y=y+80
-            temp_list.append(src_real)
-            if j==8 :
-                y=80
-    return temp_list
+            src_temp=np.array(src_real[j*80:(j+1)*80,i*80:(i+1)*80]).ravel()
+            temp_list.append(src_temp)
 
-cap = cv2.VideoCapture('img_data\\car3.mp4')
-ret, frame = cap.read()  # binary Video 객체
-grayframe = cv2.cvtColor(frame , cv2.COLOR_BGR2GRAY)
-#cv2.imshow('trim', img_trim(grayframe ,0, 80, 0, 80))
-grayframe_trim = img_trim(grayframe)
-
-print(len(grayframe_trim)) # 144개의 trim image
-
-
-
-k = cv2.waitKey(0) & 0xff
-cap.release()
-cv2.destroyAllWindows()
-
+    return np.array(temp_list)
 
 # 학습시 사용되었던 모델과 동일하게 정의
 X = tf.placeholder(tf.float32,[None,6400])
@@ -53,46 +34,57 @@ L2 = tf.nn.relu(tf.matmul(L1, w2)+b2)
 w3 = tf.get_variable("w3",[256,2])  #in shape
 b3 = tf.get_variable("b3",[2]) #out shape
 model = tf.add(tf.matmul(L2,w3),b3)
-
 saver = tf.train.Saver()
 
 #get model data
-with tf.Session() as sess:
-    sess.run(tf.global_variables_initializer())
-    saver.restore(sess, tf.train.latest_checkpoint("model"))
-    #print("Model restored.")
-    #print(w2.eval())
-
+sess=tf.Session()
+sess.run(tf.global_variables_initializer())
+saver.restore(sess, tf.train.latest_checkpoint("model"))
 
 prediction = tf.argmax(model, axis = 1)
 # 모델 원핫 인코딩
 target = tf.argmax(Y, axis = 1)
 # 값 원핫 인코딩
-'''
-# 모델의 예측 비 계산
-print('모델의 예측값', sess.run(prediction, feed_dict = {X: test_features}))
 
-# 정확도 계산
-is_correct = tf.equal(prediction, target)
-accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
-print('accuracy: %.2f' % sess.run(accuracy*100, feed_dict = {X: test_features, Y: test_labels}))
+cap = cv2.VideoCapture('img_data\\car3.mp4')
+ret, frame = cap.read()  # binary Video 객체
+# start
+while (ret ==1) :
+    grayframe = cv2.cvtColor(frame , cv2.COLOR_BGR2GRAY)
+    #cv2.imshow('trim', img_trim(grayframe ,0, 80, 0, 80))
+    grayframe_trim = img_trim(grayframe)
+    #window=cv2.imshow("image",grayframe_trim[5]) # 144개의 trim image 가 있음.3 차원 ndarray.
+    # grayframe_trim[0~143] = 지금 프레임에서 trim 되어 갈라진 각 80x80 한 픽셀을 의미함
+    test_feature=grayframe_trim / 255.0  # 0~255 => 0~1 치환
+    # 모델의 예측 비 계산
+    prelist=sess.run(prediction, feed_dict = {X: test_feature})
+    #print("모델 예측값", prelist[3:4,])
+    #print(grayframe_trim.shape)
+    prelist=np.array(prelist)
+    print(prelist)
+    width,height=0,0
+    count=0
 
-test_img_data = test_features[0:20]
-fig = plt.figure()
-for i in range(20):
-    subplot = fig.add_subplot(4,5,i+1)
-    subplot.imshow(test_img_data[i].reshape((80, 80)), cmap=plt.cm.gray_r)
-plt.show()
-'''
-'''
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=model, labels=Y))
-# cost 율 체크 , model에 label을 확인해봄으로서,(소프트맥스)
-optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
-# cost가 최소화 될수있게 경사하강법을 이용해 가장 낮은 cost를 찾는 옵티마이저
-init = tf.global_variables_initializer()
-sess = tf.Session()
-sess.run(init)
-'''
+    # 배경영역 색칠(144개의 픽셀다 돌아야함)
+    for xi in range (0,16):
+        # 픽셀이 배경일때 1 , 전경일때 0 .
+        for xj in range(0,9):
+            if prelist[count]==1:
+                #print(prelist[count])
+                grayframe[xj*80:(xj+1)*80,xi*80:(xi+1)*80]= 255
+            count = count + 1
 
-
-
+    cv2.imshow('pre',grayframe)
+    k = cv2.waitKey(1) & 0xff
+    if k == ord('q'):
+        cap.release()
+        cv2.destroyAllWindows()
+        break
+    elif k == ord('p'):
+        while (1000):
+            wk = cv2.waitKey(0)
+            if wk == ord('p'):
+                break
+    ret, frame = cap.read()  # binary Video 객체
+cap.release()
+cv2.destroyAllWindows()
