@@ -24,27 +24,27 @@ for file_image in filename_in_dir:
     print(file_image,"저장")
     x = img_to_array(img)
     x = x.reshape((1,) + x.shape)
-    os.makedirs('img_data\\img_data_rotate\\frame%d'%a)
-    os.makedirs('img_data\\img_data_shear\\frame%d' % a)
-    os.makedirs('img_data\\img_data_shift\\frame%d' % a)
-    os.makedirs('img_data\\img_data_zoom\\frame%d' % a)
+    os.makedirs('img_data\\img_data_rotate\\frame0000%d'%a)
+    os.makedirs('img_data\\img_data_shear\\frame0000%d' % a)
+    os.makedirs('img_data\\img_data_shift\\frame0000%d' % a)
+    os.makedirs('img_data\\img_data_zoom\\frame0000%d' % a)
     i=0
-    for batch in rotateGenerator.flow(x, save_to_dir='img_data\\img_data_rotate\\frame%d' % a,save_prefix='frame%d' % a, save_format='jpg'):
+    for batch in rotateGenerator.flow(x, save_to_dir='img_data\\img_data_rotate\\frame0000%d' % a,save_prefix='frame0000%d' % a, save_format='jpg'):
         i +=1
         if i>9 :
             i=0
             break;
-    for batch in shiftGenerator.flow(x, save_to_dir='img_data\\img_data_shear\\frame%d' % a,save_prefix='frame%d' % a, save_format='jpg'):
+    for batch in shiftGenerator.flow(x, save_to_dir='img_data\\img_data_shear\\frame0000%d' % a,save_prefix='frame0000%d' % a, save_format='jpg'):
         i += 1
         if i > 9:
             i = 0
             break;
-    for batch in shearGenerator.flow(x, save_to_dir='img_data\\img_data_shift\\frame%d' % a,save_prefix='frame%d' % a, save_format='jpg'):
+    for batch in shearGenerator.flow(x, save_to_dir='img_data\\img_data_shift\\frame0000%d' % a,save_prefix='frame0000%d' % a, save_format='jpg'):
         i += 1
         if i > 9:
             i = 0
             break
-    for batch in zoomGenerator.flow(x, save_to_dir='img_data\\img_data_zoom\\frame%d' % a,save_prefix='frame%d' % a, save_format='jpg'):
+    for batch in zoomGenerator.flow(x, save_to_dir='img_data\\img_data_zoom\\frame0000%d' % a,save_prefix='frame0000%d' % a, save_format='jpg'):
         i += 1
         if i > 9:
             i = 0
