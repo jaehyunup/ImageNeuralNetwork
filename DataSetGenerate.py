@@ -28,26 +28,26 @@ for file_image in filename_in_dir:
     os.makedirs('img_data\\img_data_shear\\frame0000%d' % a)
     os.makedirs('img_data\\img_data_shift\\frame0000%d' % a)
     os.makedirs('img_data\\img_data_zoom\\frame0000%d' % a)
-    i=0
+    i1,i2,i3,i4=0,0,0,0
     for batch in rotateGenerator.flow(x, save_to_dir='img_data\\img_data_rotate\\frame0000%d' % a,save_prefix='frame0000%d' % a, save_format='jpg'):
-        i +=1
-        if i>9 :
-            i=0
+        i1 +=1
+        if i1>9 :
+            i1=0
             break;
     for batch in shiftGenerator.flow(x, save_to_dir='img_data\\img_data_shear\\frame0000%d' % a,save_prefix='frame0000%d' % a, save_format='jpg'):
-        i += 1
-        if i > 9:
-            i = 0
+        i2 += 1
+        if i2 > 9:
+            i2 = 0
             break;
     for batch in shearGenerator.flow(x, save_to_dir='img_data\\img_data_shift\\frame0000%d' % a,save_prefix='frame0000%d' % a, save_format='jpg'):
-        i += 1
-        if i > 9:
-            i = 0
+        i3 += 1
+        if i3 > 9:
+            i3 = 0
             break
     for batch in zoomGenerator.flow(x, save_to_dir='img_data\\img_data_zoom\\frame0000%d' % a,save_prefix='frame0000%d' % a, save_format='jpg'):
-        i += 1
-        if i > 9:
-            i = 0
+        i4 += 1
+        if i4 > 9:
+            i4 = 0
             break
 
     a += 1

@@ -46,10 +46,11 @@ for i in range(0, len(Y_data)):
 Y_data = Y_label
 #print(Y_data.shape)
 
-train_features = X_data[0:int(len(X_data))] # 특징 개수( 이미지 개수) * 0.8
-train_labels = Y_data[0:int(len(Y_data))] # 라벨 개수( 이미지 라벨 개수) * 0.8
-test_features = X_data[0:int(0.2*len(X_data))] # 테스트 특징 개수
-test_labels = Y_data[0:int(0.2*len(Y_data))] #테스트 라벨 개수
+train_features = X_data[0:int(0.8*len(X_data))] # 특징 개수( 이미지 개수) * 0.8
+train_labels = Y_data[0:int(0.8*len(Y_data))] # 라벨 개수( 이미지 라벨 개수) * 0.8
+
+test_features = X_data[int(0.8*len(X_data)):] # 테스트 특징 개수
+test_labels = Y_data[int(0.8*len(Y_data)):] #테스트 라벨 개수
 
 # Training data declaration
 '''

@@ -12,7 +12,7 @@ filename_path_list=[] # 파일 상대경로 리스트 (0~143) 프레임당 10개
 filename_list=[] # 파일 이름 리스트 (0~143) 프레임당 10개씩
 # 총 144 * 10 = 1440 개.
 for a in range(0,144):
-    dirpath.append("img_data\\img_data_rotate\\frame0000%d"%a)
+    dirpath.append("img_data\\img_data_shear\\frame0000%d"%a)
 
 
 # path : rotate 폴더 아래 디렉토리 반환
@@ -36,28 +36,22 @@ label_File = open("img_data\\label.txt","r")
 
 Y_data = label_File.read().splitlines()
 Y_label = np.zeros((1440,2)) # Y_label One hot encoding
-print(len(Y_data))
+
 for i in range(0,len(Y_data),10):
     if Y_data[i] == '0':
         Y_label[i:i+10] = [1.0, 0.0]
     elif Y_data[i] == '1':
         Y_label[i:i+10] = [0.0, 1.0]
 
-
 Y_data = Y_label
 
 #finishd DataSet Setting
 
-train_features = X_data#[0:int(0.8*len(X_data))] # 특징 개수( 이미지 개수) * 0.8
-train_labels = Y_data#[0:int(0.8*len(Y_data))] # 라벨 개수( 이미지 라벨 개수) * 0.8
-print(len(train_features))
-print(len(train_labels))
+train_features = X_data[0:int(0.8*len(X_data))] # 특징 개수( 이미지 개수) * 0.8
+train_labels = Y_data[0:int(0.8*len(Y_data))] # 라벨 개수( 이미지 라벨 개수) * 0.8
 
 test_features = X_data[int(0.8*len(X_data)):] # 테스트 특징 개수
 test_labels = Y_data[int(0.8*len(Y_data)):] #테스트 라벨 개수
-print(len(test_features))
-print(len(test_labels))
-
 # Training data declaration
 '''
 def train_data_iterator(): # 트레이닝 데이터 셔플후 반환.
@@ -105,17 +99,17 @@ sess.run(init)
 print("==Training start===")
 #100번 학습한다
 
-for epoch in range(10):
+for epoch in range(1000):
     _, cost_val = sess.run([optimizer, cost], feed_dict={X: train_features, Y: train_labels})
     # 트레이닝 과정의 cost_val 변화
-    print("%d 번 학습의 Cost : %.6f"%(epoch, cost_val))
+    print("%d 번 학습의 Cost : %.6f"%(epoch,cost_val))
+
 
 prediction = tf.argmax(model, axis = 1)
 target = tf.argmax(Y, axis = 1)
-
 # 모델의 예측 비 계산
-print('모델의 예측값', sess.run(prediction, feed_dict={X:test_features})[::10])
-print('      실제 값', sess.run(target, feed_dict={Y: test_labels})[::10])
+print('모델의 예측값', sess.run(prediction, feed_dict = {X: test_features}))
+print('      실제 값', sess.run(target, feed_dict={Y: test_labels}))
 
 
 # 정확도 계산
@@ -125,9 +119,16 @@ print('accuracy: %.2f' % sess.run(accuracy*100, feed_dict = {X: test_features, Y
 
 print("==Training finish===")
 # 학습 된모델 저장
-saver.save(sess, './model\\rotatemodel\\', global_step= 1000)
+saver.save(sess, './model\\shearmodel\\', global_step= 1000)
 print("==Model Saved OK.===")
 
+
+test_img_data = test_features[0:50:10]
+fig = plt.figure()
+for i in range(5):
+    subplot = fig.add_subplot(4,5,i+1)
+    subplot.imshow(test_img_data[i].reshape((80, 80)), cmap=plt.cm.gray_r)
+plt.show()
 
 
 
