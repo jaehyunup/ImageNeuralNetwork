@@ -94,7 +94,6 @@ b3 = tf.Variable(tf.zeros([2]),name="b3") #out shape
 model = tf.add(tf.matmul(L2,w3),b3)
 
 
-
 saver = tf.train.Saver()
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=model, labels=Y))
 # cost 율 체크 , model에 label을 확인해봄으로서,(소프트맥스)
