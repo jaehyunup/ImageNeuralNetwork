@@ -6,10 +6,10 @@ np.random.seed(3)
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 import PIL
 
-rotateGenerator = ImageDataGenerator(rescale=1. / 255, rotation_range=40, fill_mode='nearest')
-shiftGenerator = ImageDataGenerator(rescale=1. / 255, width_shift_range=0.3, height_shift_range=0.3, fill_mode='nearest')
-shearGenerator = ImageDataGenerator(rescale=1. / 255, shear_range=30, fill_mode='nearest')
-zoomGenerator = ImageDataGenerator(rescale=1. / 255, zoom_range=[-0.1,0.1], fill_mode='nearest')
+rotateGenerator = ImageDataGenerator(rotation_range=40, fill_mode='nearest')
+shiftGenerator = ImageDataGenerator(width_shift_range=0.3, height_shift_range=0.3, fill_mode='nearest')
+shearGenerator = ImageDataGenerator( shear_range=30, fill_mode='nearest')
+zoomGenerator = ImageDataGenerator( zoom_range=[-0.1,0.1], fill_mode='nearest')
 filename_in_dir = []
 
 for root, dirs, files in os.walk('img_data\\img_data_r1'):

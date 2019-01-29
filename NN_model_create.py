@@ -24,17 +24,6 @@ Y_data = label_File.read().splitlines()
 # 라벨 데이터 입력
 
 # array to np array and split training data and test data (shuffle)
-'''
-print("======================================")
-c = list(zip(X_data,Y_data))
-shuffle(c)
-x_data, y_data = zip(*c)
-x_data = list(x_data)
-y_data = list(y_data)
-print('===============================')
-'''
-
-#print(len(X_data))
 
 Y_label = np.zeros((144,2)) # Y_label One hot encoding
 for i in range(0, len(Y_data)):
@@ -42,9 +31,15 @@ for i in range(0, len(Y_data)):
         Y_label[i] = [1.0, 0.0]
     elif Y_data[i] == '1':
         Y_label[i] = [0.0, 1.0]
-
 Y_data = Y_label
-#print(Y_data.shape)
+
+def shuffling(features,labels):
+    c = list(zip(features, labels))
+    shuffle(c)
+    x_data, y_data = zip(*c)
+    x_data = list(x_data)
+    y_data = list(y_data)
+    return np.array(x_data),np.array(y_data)
 
 train_features = X_data[0:int(0.8*len(X_data))] # 특징 개수( 이미지 개수) * 0.8
 train_labels = Y_data[0:int(0.8*len(Y_data))] # 라벨 개수( 이미지 라벨 개수) * 0.8
@@ -52,63 +47,47 @@ train_labels = Y_data[0:int(0.8*len(Y_data))] # 라벨 개수( 이미지 라벨 
 test_features = X_data[int(0.8*len(X_data)):] # 테스트 특징 개수
 test_labels = Y_data[int(0.8*len(Y_data)):] #테스트 라벨 개수
 
-# Training data declaration
-'''
-def train_data_iterator(): # 트레이닝 데이터 셔플후 반환.
-    while True:
-        idxs = np.arange(0, len(train_features))
-        np.random.shuffle(idxs)
-        shuf_features = train_features[idxs]
-        shuf_labels=train_labels[idxs]
-        batch_size = 10
-        for batch_idx in range(0,len(train_features), batch_size):
-            images_batch = shuf_features[batch_idx:batch_idx+batch_size]
-            labels_batch = shuf_labels[batch_idx:batch_idx+batch_size]
-            yield images_batch, labels_batch
-'''
-
+# 학습시 사용되었던 모델과 동일하게 정의
 X = tf.placeholder(tf.float32,[None,6400])
-# 1.자료형  2,데이터 크기에 맞출거면 None  3.입력 데이터크기
 Y = tf.placeholder(tf.float32,[None,2])
-
 # layer 1
-w1 = tf.get_variable("w1",[6400,1024]) #in
-b1 = tf.get_variable("b1",[1024]) # out
+w1 = tf.Variable(tf.random_normal([6400,1024],stddev = 0.01),name="w1") #in
+b1 = tf.Variable(tf.zeros([1024]),name="b1") # out
 L1 = tf.nn.relu(tf.matmul(X, w1)+b1)
-
 # layer 2
-w2 = tf.get_variable("w2",[1024,256]) #in
-b2 = tf.get_variable("b2",[256]) # out
+w2 = tf.Variable(tf.random_normal([1024,256], stddev = 0.01),name="w2") #in
+b2 = tf.Variable(tf.zeros([256]),name="b2") # out
 L2 = tf.nn.relu(tf.matmul(L1, w2)+b2)
-
 # layer 3
-w3 = tf.get_variable("w3",[256,2])  #in shape
-b3 = tf.get_variable("b3",[2]) #out shape
+w3 = tf.Variable(tf.random_normal([256,2], stddev = 0.01),name="w3")  #in shape
+b3 = tf.Variable(tf.zeros([2]),name="b3") #out shape
 model = tf.add(tf.matmul(L2,w3),b3)
 
-#Create the saver
+init = tf.global_variables_initializer()
+
 saver = tf.train.Saver()
 
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=model, labels=Y))
-# cost 율 체크 , model에 label을 확인해봄으로서,(소프트맥스)
-optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
-# cost가 최소화 될수있게 경사하강법을 이용해 가장 낮은 cost를 찾는 옵티마이저
-init = tf.global_variables_initializer()
-sess = tf.Session()
-sess.run(init)
 
-print("==Training start===")
-#100번 학습한다
-a=0
-for epoch in range(1000):
-    _, cost_val = sess.run([optimizer, cost], feed_dict={X: train_features, Y: train_labels})
-    # 트레이닝 과정의 cost_val 변화
-    print("%d 번 학습의 Cost : %.6f"%(a,cost_val))
-    a=a+1;
-print("==Training finish===")
-# 학습 된모델 저장
-saver.save(sess, './model\\'+"testModel", global_step= 1000)
-print("==Model Saved OK.===")
+with tf.Session() as sess:
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=model, labels=Y))
+    # cost 율 체크 , model에 label을 확인해봄으로서,(소프트맥스)
+    optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
+    # cost가 최소화 될수있게 경사하강법을 이용해 가장 낮은 cost를 찾는 옵티마이저
+    sess.run(init)
+    print("==Training start===")
+    #100번 학습한다
+    a=0
+    for epoch in range(2000):
+        sp_train_features, sp_train_labels= shuffling(train_features,train_labels)
+        _, cost_val = sess.run([optimizer, cost], feed_dict={X: sp_train_features, Y: sp_train_labels})
+        # 트레이닝 과정의 cost_val 변화
+        print("%d 번 학습의 Cost : %.6f"%(a,cost_val))
+        a=a+1;
+    print("==Training finish===")
+    # 학습 된모델 저장
+    #Create the save file
+    saver.save(sess, './model\\'+"testModel", global_step=2000)
+    print("==Model Saved OK.===")
 
 
 

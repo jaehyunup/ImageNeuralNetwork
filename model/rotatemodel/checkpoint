@@ -1,2 +1,2 @@
-model_checkpoint_path: "-1000"
-all_model_checkpoint_paths: "-1000"
+model_checkpoint_path: "rotatemodel-1000"
+all_model_checkpoint_paths: "rotatemodel-1000"
