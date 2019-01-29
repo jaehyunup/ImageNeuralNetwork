@@ -1,0 +1,2 @@
+model_checkpoint_path: "shearmodel-1000"
+all_model_checkpoint_paths: "shearmodel-1000"

@@ -1,0 +1,2 @@
+model_checkpoint_path: "shiftmodel-1000"
+all_model_checkpoint_paths: "shiftmodel-1000"
