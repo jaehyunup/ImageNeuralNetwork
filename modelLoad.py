@@ -38,7 +38,7 @@ saver = tf.train.Saver()
 #get model data
 sess=tf.Session()
 sess.run(tf.global_variables_initializer())
-saver.restore(sess, tf.train.latest_checkpoint("model\\rotatemodel"))
+saver.restore(sess, tf.train.latest_checkpoint("model\\shiftmodel"))
 
 prediction = tf.argmax(model, axis = 1)
 # 모델 원핫 인코딩
@@ -60,7 +60,6 @@ while (ret ==1) :
     #print("모델 예측값", prelist[3:4,])
     #print(grayframe_trim.shape)
     prelist=np.array(prelist)
-    print(prelist)
     width,height=0,0
     count=0
 
@@ -74,7 +73,7 @@ while (ret ==1) :
             count = count + 1
 
     cv2.imshow('pre',grayframe)
-    k = cv2.waitKey(10) & 0xff
+    k = cv2.waitKey(1) & 0xff
     if k == ord('q'):
         cap.release()
         cv2.destroyAllWindows()

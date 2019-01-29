@@ -19,17 +19,21 @@ def shuffling(features,labels):
 dirpath=[]
 filename_path_list=[] # 파일 상대경로 리스트 (0~143) 프레임당 10개씩
 filename_list=[] # 파일 이름 리스트 (0~143) 프레임당 10개씩
-# 총 144 * 10 = 1440 개.
-for a in range(0,144):
-    dirpath.append("img_data\\img_data_rotate\\frame0000%d"%a)
+# 총 144*3*10  = 4320 개.
+
+for i in range(144):
+    dirpath.append("img_data\\img_data_rotate\\frame0000%d"%i)
+    dirpath.append("img_data\\img_data_shear\\frame0000%d"%i)
+    dirpath.append("img_data\\img_data_shift\\frame0000%d"%i)
+
 
 print(dirpath)
 # path : rotate 폴더 아래 디렉토리 반환
 X_data = []
 Y_data = []
 
-#Create the saver
 
+# read frame image
 for framedir in dirpath:
     for root, dirs, files in os.walk(framedir):
         for fname in files:
@@ -39,41 +43,24 @@ for framedir in dirpath:
             img_read = cv2.imread(full_fname, 2).ravel() / 255.0  # 0~255 => 0~1 치환
             X_data.append(img_read)
 
-print(len(X_data)) # 1440개의 img . 10개씩 한프레임으로 취급.
 
 # read label in Y_data
 label_File = open("img_data\\label.txt","r")
-
 Y_data = label_File.read().splitlines()
 Y_label = []
-print(len(Y_data))
-#0~144 까지
 for i in range(0,len(Y_data)):
     if Y_data[i] == '0':
-        for j in range(10):
-            #Y_label[i:i+10] = [1.0, 0.0]
+        for j in range(30):
             Y_label.append([1.0,0.0])
-            #print("%d 번째 - 0 판단"%i)
-            #print(len(Y_label[i:i+10]))
-            #print(Y_label[i:i + 10])
     elif Y_data[i] == '1':
-        for j in range(10):
+        for j in range(30):
             Y_label.append([0.0, 1.0])
-            #Y_label[i:i+10] = [0.0, 1.0]
-            #print("%d 번째 - 1 판단"%i)
-            #print(len(Y_label[i:i+10]))
-            #print(Y_label[i:i + 10])
 #finishd DataSet Setting
-
 Y_label = np.array(Y_label)
-
 train_features = X_data[0:int(0.8*len(X_data))] # 특징 개수( 이미지 개수) * 0.8
 train_labels = Y_label[0:int(0.8*len(Y_label))] # 라벨 개수( 이미지 라벨 개수) * 0.8
-
 test_features = X_data[int(0.8*len(X_data)):] # 테스트 특징 개수
 test_labels = Y_label[int(0.8*len(Y_label)):] #테스트 라벨 개수
-print('t', train_labels)
-
 #print(Y_label.shape)
 
 
@@ -109,7 +96,9 @@ with tf.Session() as sess:
     #100번 학습
     a=0
     for epoch in range(1000):
-        _, cost_val = sess.run([optimizer, cost], feed_dict={X: train_features, Y: train_labels})
+        # shuffling data -> sp_
+        sp_train_features, sp_train_labels= shuffling(train_features,train_labels)
+        _, cost_val = sess.run([optimizer, cost], feed_dict={X: sp_train_features, Y: sp_train_labels})
         # 트레이닝 과정의 cost_val 변화
         print("%d 번 학습의 Cost : %.6f"%(a,cost_val))
         a=a+1;
@@ -129,7 +118,7 @@ with tf.Session() as sess:
     print("==Training finish===")
 
     # 학습 된모델 저장
-    saver.save(sess, './model\\rotatemodel\\rotatemodel', global_step=1000)
+    saver.save(sess, './model\\fusionmodel\\fusionmodel', global_step=1000)
     print("==Model Saved OK.===")
 
     # 데이터셋 체크

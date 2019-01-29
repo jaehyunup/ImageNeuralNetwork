@@ -109,7 +109,8 @@ with tf.Session() as sess:
     #100번 학습
     a=0
     for epoch in range(1000):
-        _, cost_val = sess.run([optimizer, cost], feed_dict={X: train_features, Y: train_labels})
+        sp_train_features, sp_train_labels= shuffling(train_features,train_labels)
+        _, cost_val = sess.run([optimizer, cost], feed_dict={X: sp_train_features, Y: sp_train_labels})
         # 트레이닝 과정의 cost_val 변화
         print("%d 번 학습의 Cost : %.6f"%(a,cost_val))
         a=a+1;
@@ -127,6 +128,10 @@ with tf.Session() as sess:
     accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
     print('accuracy: %.2f' % sess.run(accuracy*100, feed_dict = {X: test_features, Y: test_labels}))
     print("==Training finish===")
+
+    # 학습 된모델 저장
+    saver.save(sess, './model\\zoommodel\\zoommodel', global_step=1000)
+    print("==Model Saved OK.===")
 
     # 데이터셋 체크
     print("==Check Original DataSet..===")
@@ -147,11 +152,6 @@ with tf.Session() as sess:
         subplot = fig.add_subplot(2,5,i+1)
         subplot.imshow(test_img_data[i].reshape((80,80)), cmap=plt.cm.gray_r)
     plt.show()
-
-    # 학습 된모델 저장
-    saver.save(sess, './model\\zoommodel\\zoommodel', global_step= 1000)
-    print("==Model Saved OK.===")
-
 
 
 
