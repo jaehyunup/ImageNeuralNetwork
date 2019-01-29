@@ -33,12 +33,12 @@ for file_image in filename_in_dir:
         i1 +=1
         if i1>9 :
             i1=0
-            break;
+            break
     for batch in shiftGenerator.flow(x, save_to_dir='img_data\\img_data_shear\\frame0000%d' % a,save_prefix='frame0000%d' % a, save_format='jpg'):
         i2 += 1
         if i2 > 9:
             i2 = 0
-            break;
+            break
     for batch in shearGenerator.flow(x, save_to_dir='img_data\\img_data_shift\\frame0000%d' % a,save_prefix='frame0000%d' % a, save_format='jpg'):
         i3 += 1
         if i3 > 9:
@@ -49,5 +49,4 @@ for file_image in filename_in_dir:
         if i4 > 9:
             i4 = 0
             break
-
     a += 1
