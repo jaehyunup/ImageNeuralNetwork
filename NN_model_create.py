@@ -95,7 +95,7 @@ print(test_features[0])
 
 
 prediction = tf.argmax(model, axis = 1)
-target = tf.argmax(Y, axis = 1)
+target = tf.argmax(Y, axis = 1) #가장 큰값 인덱스
 # 모델의 예측 비 계산
 print('모델의 예측값', sess.run(prediction, feed_dict = {X: test_features}))
 print('      실제 값', sess.run(target, feed_dict={Y: test_labels}))
