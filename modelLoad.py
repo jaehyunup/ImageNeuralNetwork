@@ -7,15 +7,41 @@ except ImportError:
 import tensorflow as tf
 import numpy as np
 
+
+def mListener(event, x, y, flags, param):
+    # refPt와 cropping 변수를 global로 만듭니다.
+    global refPt, cropping
+    # 왼쪽 마우스가 클릭되면 (x, y) 좌표 기록을 시작하고
+    # cropping = True로 만들어 줍니다.
+    if event == cv2.EVENT_LBUTTONDOWN:
+        while(True):
+            if(x in range( tempxypatharray[0][3],tempxypatharray[0][4])):
+                #
+                print("hello")
+    elif event == cv2.EVENT_LBUTTONUP:
+        refPt.append((x, y))
+        cropping = False
+
+        '''# ROI 사각형을 이미지에 그립니다.
+        cv2.rectangle(image, refPt[0], refPt[1], (0, 255, 0), 2)
+        cv2.imshow("image", image)
+        '''
+xypatharray=[]
+tempxypatharray=[]
+#xypatharray 에.. 프레임별 좌표어레이가 다 있다.. 그렇다면 ... 각 프레임마다..xypatharray에서 한 인덱스를..
+#가져와가지고.... 클릭 체크를 하자... 순서대로 x,y,checkFlag 이다. ...체크되면 ..flag 가.. true 이다 ..
+
 def img_trim(src_image):
+    del tempxypatharray[:]
     src_real=src_image.copy()
     temp_list=[]
     x ,y=0,0
     for i in range(0,16):
         for j in range(0,9):
             src_temp=np.array(src_real[j*80:(j+1)*80,i*80:(i+1)*80]).ravel()
+            tempxypatharray.append((j*80, (j+1)*80, i*80, (i+1)*80, False))
             temp_list.append(src_temp)
-
+    xypatharray.append(tempxypatharray)
     return np.array(temp_list)
 
 # 학습시 사용되었던 모델과 동일하게 정의
@@ -71,9 +97,11 @@ while (ret ==1) :
                 #print(prelist[count])
                 grayframe[xj*80:(xj+1)*80,xi*80:(xi+1)*80]= 255
             count = count + 1
+    cv2.imshow('TEST',grayframe)
+    #마우스 콜백 등록부
+    cv2.setMouseCallback('TEST', mListener)
 
-    cv2.imshow('pre',grayframe)
-    k = cv2.waitKey(1) & 0xff
+    k = cv2.waitKey(0) & 0xff
     if k == ord('q'):
         cap.release()
         cv2.destroyAllWindows()
