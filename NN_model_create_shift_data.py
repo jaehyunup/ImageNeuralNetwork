@@ -37,7 +37,9 @@ for framedir in dirpath:
             filename_list.append(fname)
             filename_path_list.append(full_fname) #디렉토리 내의 파일 name
             img_read = cv2.imread(full_fname, 2).ravel() / 255.0  # 0~255 => 0~1 치환
+            len(img_read)
             X_data.append(img_read)
+
 
 print(len(X_data)) # 1440개의 img . 10개씩 한프레임으로 취급.
 

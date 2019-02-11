@@ -46,7 +46,7 @@ saver = tf.train.Saver()
 #get model data
 sess=tf.Session()
 sess.run(tf.global_variables_initializer())
-saver.restore(sess, tf.train.latest_checkpoint("model\\shiftmodel"))
+saver.restore(sess, tf.train.latest_checkpoint("model\\rotatemodel"))
 
 prediction = tf.argmax(model, axis = 1)
 # 모델 원핫 인코딩

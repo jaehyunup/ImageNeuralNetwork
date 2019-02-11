@@ -40,13 +40,12 @@ for framedir in dirpath:
             X_data.append(img_read)
 
 print(len(X_data)) # 1440개의 img . 10개씩 한프레임으로 취급.
-
+print(np.array(X_data).shape)
 # read label in Y_data
 label_File = open("img_data\\label.txt","r")
 
 Y_data = label_File.read().splitlines()
 Y_label = []
-print(len(Y_data))
 #0~144 까지
 for i in range(0,len(Y_data)):
     if Y_data[i] == '0':
