@@ -45,7 +45,7 @@ for root, dirs, files in os.walk('img_data\\img_data_r1'):
 #genenum=int(input("데이터를 몇배로 확장 하시겠습니까?(숫자 입력)"))-1
 #genetype=int(input("확장방법 ? 1: rotate , 2: shear , 3: shift , 4: zoom "))
 genenum=10-1
-genetype=1
+genetype=3
 
 for file_image in filename_in_dir:
     img = load_img(file_image,color_mode='grayscale')
@@ -136,8 +136,6 @@ w3 = tf.Variable(tf.random_normal([256,2], stddev = 0.01),name="w3")  #in shape
 b3 = tf.Variable(tf.zeros([2]),name="b3") #out shape
 model = tf.add(tf.matmul(L2,w3),b3)
 
-
-
 saver = tf.train.Saver()
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=model, labels=Y))
 # cost 율 체크 , model에 label을 확인해봄으로서,(소프트맥스)
@@ -145,18 +143,25 @@ optimizer = tf.train.AdamOptimizer().minimize(cost)
 # 값 원핫 인코딩
 init = tf.group(tf.global_variables_initializer(),tf.local_variables_initializer())
 
+tf.summary.histogram('histogram',model)
+merged = tf.summary.merge_all()
 with tf.Session() as sess:
     sess.run(init)
     ckpt_path = saver.restore(sess, 'model/testModel-2000')
     # cost가 최소화 될수있게 경사하강법을 이용해 가장 낮은 cost를 찾는 옵티마이저
     #100번 학습
+
+    train_writer = tf.summary.FileWriter('./train', sess.graph)
     a=0
-    for epoch in range(1000):
+    for epoch in range(800):
         sp_train_features, sp_train_labels= shuffling(train_features,train_labels)
-        _, cost_val = sess.run([optimizer, cost], feed_dict={X: sp_train_features, Y: sp_train_labels})
+        cost_val = sess.run([optimizer, cost], feed_dict={X: sp_train_features, Y: sp_train_labels})
         # 트레이닝 과정의 cost_val 변화
-        print("%d 번 학습의 Cost : %.6f"%(a,cost_val))
-        a=a+1;
+        #print("%d 번 학습의 Cost : %.6f"%(a,cost_val))
+
+        train_writer.add_summary(int(cost_val),epoch)
+        a=a+1
+    train_writer.close()
 
     prediction = tf.argmax(model, axis=1)
     # 모델 원핫 인코딩
@@ -172,14 +177,15 @@ with tf.Session() as sess:
     print('accuracy: %.2f' % sess.run(accuracy*100, feed_dict = {X: test_features, Y: test_labels}))
     print("==Training finish===")
 
+
     # 학습 된모델 저장
-    saver.save(sess, './model\\rotatemodel\\rotatemodel', global_step=1000)
+    saver.save(sess, './model\\shiftmodel\\shiftmodel', global_step=1000)
     print("==Model Saved OK.===")
 
     # 데이터셋 체크
     print("==Check Original DataSet..===")
-    print(train_labels[0:100:10])
-    test_img_data = train_features[0:100:10]
+    print(sp_train_labels[0:1000:100])
+    test_img_data = sp_train_features[0:1000:100]
     fig = plt.figure()
     for i in range(10):
         subplot = fig.add_subplot(2,5,i+1)
@@ -188,7 +194,7 @@ with tf.Session() as sess:
 
     # 데이터셋 체크
     print("==Check Test DataSet..===")
-    print(test_labels[0:100:10])
+    print(test_labels[0:1000:100])
     test_img_data = test_features[0:100:10]
     fig = plt.figure()
     for i in range(10):
