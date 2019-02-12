@@ -10,8 +10,6 @@ import numpy as np
 
 xypatharray=[]
 tempxypatharray=[]
-#xypatharray 에.. 프레임별 좌표어레이가 다 있다.. 그렇다면 ... 각 프레임마다..xypatharray에서 한 인덱스를..
-#가져와가지고.... 클릭 체크를 하자... 순서대로 x,y,checkFlag 이다. ...체크되면 ..flag 가.. true 이다 ..
 
 def img_trim(src_image):
     del tempxypatharray[:]
