@@ -148,6 +148,15 @@ with tf.name_scope('SoftMax') as scope:
 with tf.name_scope('opt') as scope:
     optimizer = tf.train.AdamOptimizer().minimize(cost)
 
+with tf.name_scope("test") as scope:
+    prediction = tf.argmax(model, axis=1)
+    # 모델 원핫 인코딩
+    target = tf.argmax(Y, axis=1)
+    # 정확도 계산
+    is_correct = tf.equal(prediction, target)
+    accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
+    tf.summary.scalar('accuracy', accuracy)
+
 saver = tf.train.Saver()
 init = tf.group(tf.global_variables_initializer(),tf.local_variables_initializer())
 
@@ -166,16 +175,6 @@ with tf.Session() as sess:
         train_writer.add_summary(summary=summary,global_step=epoch)
 
     train_writer.close()
-    prediction = tf.argmax(model, axis=1)
-    # 모델 원핫 인코딩
-    target = tf.argmax(Y, axis=1)
-    # 모델의 예측 비 계산
-    print('모델의 예측값', sess.run(prediction, feed_dict={X: test_features}))
-    print('      실제 값', sess.run(target, feed_dict={Y: test_labels}))
-    # 정확도 계산
-    is_correct = tf.equal(prediction, target)
-    accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
-    tf.summary.scalar('accuracy', accuracy)
 
     print('accuracy: %.2f' % sess.run(accuracy*100, feed_dict = {X: test_features, Y: test_labels}))
     print("==Training finish===")
