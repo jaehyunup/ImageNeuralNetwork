@@ -104,8 +104,7 @@ saver = tf.train.Saver()
 
 with tf.Session() as sess:
     init = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
-
-    #ckpt_path = saver.restore(sess, 'model/testModel-2000')
+    ckpt_path = saver.restore(sess, 'model/testModel-2000')
     merged = tf.summary.merge_all()
     writer = tf.summary.FileWriter('./logs')
     writer.add_graph(sess.graph)

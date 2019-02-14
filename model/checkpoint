@@ -1,2 +1,2 @@
-model_checkpoint_path: "testModel-2000"
-all_model_checkpoint_paths: "testModel-2000"
+model_checkpoint_path: "testModel-80"
+all_model_checkpoint_paths: "testModel-80"
