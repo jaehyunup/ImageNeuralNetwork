@@ -44,7 +44,7 @@ saver = tf.train.Saver()
 #get model data
 sess=tf.Session()
 sess.run(tf.global_variables_initializer())
-saver.restore(sess, tf.train.latest_checkpoint("model\\shiftmodel"))
+saver.restore(sess, tf.train.latest_checkpoint("model"))
 
 prediction = tf.argmax(model, axis = 1)
 # 모델 원핫 인코딩
@@ -54,6 +54,8 @@ target = tf.argmax(Y, axis = 1)
 cap = cv2.VideoCapture('img_data\\car3.mp4')
 ret, frame = cap.read()  # binary Video 객체
 # start
+fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+out = cv2.VideoWriter('nomal.avi', fourcc, 25.0, (1280, 720))
 while (ret ==1) :
     grayframe = cv2.cvtColor(frame , cv2.COLOR_BGR2GRAY)
     #cv2.imshow('trim', img_trim(grayframe ,0, 80, 0, 80))
@@ -75,13 +77,14 @@ while (ret ==1) :
         for xj in range(0,9):
             if prelist[count]==1:
                 #print(prelist[count])
-                grayframe[xj*80:(xj+1)*80,xi*80:(xi+1)*80]= 255
+                frame[xj*80:(xj+1)*80,xi*80:(xi+1)*80]= (0,0,255)
             count = count + 1
-    cv2.imshow('TEST',grayframe)
+    #out.write(frame)
+    cv2.imshow('TEST',frame)
     #마우스 콜백 등록부
     #cv2.setMouseCallback('TEST', mListener)
-
-    k = cv2.waitKey(2) & 0xff
+    ret, frame = cap.read()  # binary Video 객체
+    k = cv2.waitKey(10) & 0xff
     if k == ord('q'):
         cap.release()
         cv2.destroyAllWindows()
@@ -91,6 +94,6 @@ while (ret ==1) :
             wk = cv2.waitKey(0)
             if wk == ord('p'):
                 break
-    ret, frame = cap.read()  # binary Video 객체
+out.release()
 cap.release()
 cv2.destroyAllWindows()

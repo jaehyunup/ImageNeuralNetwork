@@ -40,7 +40,7 @@ for root, dirs, files in os.walk('img_data\\img_data_r1'):
 # 144개 기존이미지 불러오기 완료
 #genenum=int(input("데이터를 몇배로 확장 하시겠습니까?(숫자 입력)"))-1
 #genetype=int(input("확장방법 ? 1: rotate , 2: shear , 3: shift , 4: zoom "))
-genenum=1-1
+genenum=100-1
 genetype=3
 
 for file_image in filename_in_dir:
@@ -159,7 +159,7 @@ for epoch in range(200):
     #print("%d 번 학습의 Cost : %.6f"%(epoch,cost_val))
     train_writer.add_summary(summary=summary,global_step=epoch)
 train_writer.close()
-print('accuracy: %.2f' % sess.run(accuracy*100, feed_dict = {X: test_features, Y: test_labels}))
+print('테스트 정확도: %.2f' % sess.run(accuracy*100, feed_dict = {X: test_features, Y: test_labels}))
 print("==Training finish===")
 
 # 학습 된모델 저장

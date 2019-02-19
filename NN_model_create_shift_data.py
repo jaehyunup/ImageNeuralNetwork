@@ -106,7 +106,8 @@ init = tf.group(tf.global_variables_initializer(),tf.local_variables_initializer
 
 with tf.Session() as sess:
     sess.run(init)
-    ckpt_path = saver.restore(sess, 'model/testModel-2000')
+    saver.restore(sess, tf.train.latest_checkpoint("model"))
+
     # cost가 최소화 될수있게 경사하강법을 이용해 가장 낮은 cost를 찾는 옵티마이저
     #100번 학습
     a=0

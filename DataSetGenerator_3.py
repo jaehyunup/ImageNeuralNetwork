@@ -41,14 +41,14 @@ for root, dirs, files in os.walk('img_data\\img_data_r1'):
 #genenum=int(input("데이터를 몇배로 확장 하시겠습니까?(숫자 입력)"))-1
 #genetype=int(input("확장방법 ? 1: rotate , 2: shear , 3: shift , 4: zoom "))
 genenum=100-1
-genetype=3
+genetype=2
 
 for file_image in filename_in_dir:
     img = load_img(file_image,color_mode='grayscale')
     x = img_to_array(img)
     x = x.reshape((1,) + x.shape)
     i1,i2,i3,i4=0,0,0,0
-    if genetype==1 :
+    if genetype== 1 :
         for batch in rotateGenerator.flow(x):
             i1 +=1
             Dataset.append(batch.ravel()/255.0)
@@ -144,7 +144,7 @@ with tf.name_scope("accuracyCheck") as scope:
     is_correct = tf.equal(prediction, target)
     accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
     tf.summary.scalar('accuracy', accuracy)
-
+saver = tf.train.Saver()
 sess=tf.Session()
 init = tf.group(tf.global_variables_initializer(),tf.local_variables_initializer())
 merged = tf.summary.merge_all()
@@ -153,13 +153,13 @@ sess.run(init)
 # cost가 최소화 될수있게 경사하강법을 이용해 가장 낮은 cost를 찾는 옵티마이저
 #100번 학습
 for epoch in range(200):
-    #sp_train_features, sp_train_labels= shuffling(train_features,train_labels)
-    summary, _,cost_val = sess.run([merged,optimizer, cost], feed_dict={X: train_features, Y: train_labels})
+    sp_train_features, sp_train_labels= shuffling(train_features,train_labels)
+    summary, _,cost_val = sess.run([merged,optimizer, cost], feed_dict={X: sp_train_features, Y: sp_train_labels})
     # 트레이닝 과정의 cost_val 변화
     #print("%d 번 학습의 Cost : %.6f"%(epoch,cost_val))
     train_writer.add_summary(summary=summary,global_step=epoch)
 train_writer.close()
-print('accuracy: %.2f' % sess.run(accuracy*100, feed_dict = {X: test_features, Y: test_labels}))
+print(' 배경 인식 테스트 정확도: %.2f' % sess.run(accuracy*100, feed_dict = {X: test_features, Y: test_labels}))
 print("==Training finish===")
 
 # 학습 된모델 저장
